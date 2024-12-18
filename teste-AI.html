@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What do you want to know today?</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>What do you want to know today?</h1>
+  
+  <!-- Text field to input data -->
+  <textarea id="inputText" placeholder="Type your message here..." rows="5" cols="60"></textarea><br><br>
+
+  <!-- Button to send the input data to the API -->
+  <button id="sendButton">Send</button>
+  
+  <h2>Here is your answer:</h2>
+  <div id="output" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; max-width: 600px; overflow: auto;">
+    <!-- Data from the stream will be displayed here -->
+  </div>
+
+  <script>
+    // Function to send the input text to the API via POST and handle streamed response
+    function sendDataAndStreamResponse() {
+	  $('#output').text('Loading...');
+      const inputText = $('#inputText').val(); // Get the value from the text area
+      //const apiUrl = 'http://localhost:8080/ai/generateStream';   // Replace with your API URL
+	  const apiUrl = 'http://localhost:8080/helpdesk/chat';
+
+      // Send a POST request with the data from the text area
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ promptMessage: inputText, historyId: 1234 }), // Send the message as JSON
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = ''; // Buffer to accumulate incoming data
+
+        // Function to read the stream and update the output div
+        function readStream() {
+          reader.read().then(({ done, value }) => {
+            if (done) {
+              console.log('Stream finished');
+              return;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+
+            // Update the #output div with the current content
+            $('#output').text(buffer);
+
+            // Continue reading the stream
+            readStream();
+          }).catch(error => {
+            console.error('Error while reading stream:', error);
+          });
+        }
+
+        // Start reading the stream
+        readStream();
+      })
+      .catch(error => {
+        console.error('Error with POST request:', error);
+        alert('Error sending message.');
+      });
+    }
+
+    // Event listener for the "Send" button click
+    $('#sendButton').click(function() {
+      sendDataAndStreamResponse();  // Call the function to send the data and process the stream
+    });
+  </script>
+</body>
+</html>

@@ -1,11 +1,8 @@
 package com.rraminelli.samplespringaiollama.service;
 
-import com.rraminelli.samplespringaiollama.dto.HelpDeskResponse;
 import com.rraminelli.samplespringaiollama.dto.HistoryEntry;
-import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.stereotype.Service;
@@ -16,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @Service
 public class HelpDeskChatbotAgentService {
 
@@ -60,6 +56,10 @@ public class HelpDeskChatbotAgentService {
         """;
 
     private final OllamaChatModel ollamaChatClient;
+
+    public HelpDeskChatbotAgentService(OllamaChatModel ollamaChatClient) {
+        this.ollamaChatClient = ollamaChatClient;
+    }
 
     public Flux<String> call(String userMessage, String historyId) {
         var currentHistory = conversationalHistoryStorage.computeIfAbsent(historyId, k -> new ArrayList<>());

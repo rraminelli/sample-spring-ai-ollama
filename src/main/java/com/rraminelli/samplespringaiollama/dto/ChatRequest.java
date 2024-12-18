@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class ChatRequest {
-    String promptMessage;
+public record ChatRequest(String promptMessage) {
+
+
 }

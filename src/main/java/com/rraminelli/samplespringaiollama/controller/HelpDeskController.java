@@ -7,15 +7,18 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @CrossOrigin("*")
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/helpdesk")
 public class HelpDeskController {
 
     private final HelpDeskChatbotAgentService helpDeskChatbotAgentService;
 
+    public HelpDeskController(HelpDeskChatbotAgentService helpDeskChatbotAgentService) {
+        this.helpDeskChatbotAgentService = helpDeskChatbotAgentService;
+    }
+
     @PostMapping("/chat")
     public Flux<String> chat(@RequestBody HelpDeskRequest helpDeskRequest) {
-        return helpDeskChatbotAgentService.call(helpDeskRequest.getPromptMessage(), helpDeskRequest.getHistoryId());
+        return helpDeskChatbotAgentService.call(helpDeskRequest.promptMessage(), helpDeskRequest.historyId());
     }
 }

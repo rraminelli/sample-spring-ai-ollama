@@ -10,12 +10,14 @@ import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-@RequiredArgsConstructor
 @Service
-@Slf4j
 public class Llama2AiService {
 
     private final OllamaChatModel chatModel;
+
+    public Llama2AiService(OllamaChatModel chatModel) {
+        this.chatModel = chatModel;
+    }
 
     public String generateResponse(String prompt) {
 
